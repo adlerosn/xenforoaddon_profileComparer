@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<addon addon_id="profileComparer" title="[kiror] Profile comparer" version_string="0.0" version_id="0" url="https://github.com/adlerosn/" install_callback_class="" install_callback_method="" uninstall_callback_class="" uninstall_callback_method="">
+  <admin_navigation/>
+  <admin_permissions/>
+  <admin_style_properties/>
+  <admin_templates/>
+  <admin_template_modifications/>
+  <code_events/>
+  <code_event_listeners>
+    <listener event_id="load_class_controller" execute_order="10" callback_class="profileComparer_ControllerPublicMemberListener" callback_method="callback" active="1" hint="XenForo_ControllerPublic_Member" description="Adds moderator's profile comparer"/>
+  </code_event_listeners>
+  <cron/>
+  <email_templates/>
+  <email_template_modifications/>
+  <optiongroups/>
+  <permissions>
+    <permission_groups/>
+    <permissions>
+      <permission permission_group_id="general" permission_id="compare_profiles" permission_type="flag" default_value="unset" interface_group_id="generalModeratorPermissions" display_order="129"/>
+    </permissions>
+    <interface_groups/>
+  </permissions>
+  <phrases>
+    <phrase title="add_user" version_id="0" version_string="0.0"><![CDATA[Add User]]></phrase>
+    <phrase title="permission_general_compare_profiles" version_id="0" version_string="0.0"><![CDATA[Compare profiles]]></phrase>
+  </phrases>
+  <route_prefixes/>
+  <style_properties/>
+  <templates>
+    <template title="member_compare" version_id="0" version_string="0.0"><![CDATA[<xen:title>Profile comparer</xen:title>
+
+<div class="section ">
+	<style>
+	li.memberListItem{
+		background-color: transparent;
+	}
+	.noTopMarginSection{
+		margin-top: 0px !important;
+	}
+	</style>
+	<h3 class="subHeading">Comparing users:</h3>
+	<div class="section noTopMarginSection secondaryContent">
+		<form action="{xen:link members/compare}" method="post" class="findMember">
+			<ol>
+			<xen:foreach loop="$comparing" value="$user" key="$id">
+				<xen:include template="member_list_item" />
+				<input type="hidden" name="user_id[]" value="{$user.user_id}" />
+			</xen:foreach>
+				<li>
+<li class="primaryContent memberListItem">
+	<xen:avatar user="$guest" size="s" class="NoOverlay" />
+		<div class="member">
+			<h3 class="username">
+				<input
+					type="search"
+					name="username"
+					placeholder="{xen:phrase add_user}..."
+					results="0"
+					class="textCtrl AutoComplete" data-autoSubmit="true"
+				/>
+			<div class="userInfo">
+				<a
+					class="button"
+					href="{xen:link members/compare}"
+				>
+				{xen:phrase clear}
+				</a>
+			</div>
+			</h3>
+		</div>
+</li>
+				</li>
+			</ol>
+				<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
+		</form>
+	</div>
+</div>
+
+<div class="section">
+	<h3 class="subHeading">Comparation:</h3>
+	<div class="secondaryContent">
+		<style>
+		.compareTable td{
+			border: 1px solid;
+			border-color: {xen:property primaryLight};
+		}
+		.compareTable th{
+			border: 1px solid;
+			border-color: {xen:property primaryLight};
+			background-color: {xen:property primaryLighter};
+			font-weight: bold;
+			padding: 3px;
+		}
+		.backHighlight{
+			background-color: {xen:property inlineMod};
+			border-radius: 2px;
+			padding-left: 2px;
+			padding-right: 2px;
+		}
+		</style>
+		{xen:raw $comparations}
+	</div>
+</div>]]></template>
+  </templates>
+  <public_template_modifications>
+    <modification template="member_card" modification_key="addcmplinkonmembercard" description="Add compare link on member card" execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#<xen:if is="{\$canCleanSpam}">.+?</xen:if>#s]]></find>
+      <replace><![CDATA[$0
+<xen:if is="{$visitor.permissions.general.compare_profiles}"><a href="{xen:link 'members/compare',$user}">Compare</a></xen:if>]]></replace>
+    </modification>
+    <modification template="member_view" modification_key="addlinkonmoderatortools" description="Add link on moderator tools" execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#<xen:if is="{\$canViewIps}">.+?</xen:if>#s]]></find>
+      <replace><![CDATA[$0
+<xen:if is="{$visitor.permissions.general.compare_profiles}">
+<li><a href="{xen:link 'members/compare',$user}">Compare Members</a></li>
+</xen:if>]]></replace>
+    </modification>
+  </public_template_modifications>
+  <bb_code_media_sites/>
+  <bb_codes/>
+</addon>
